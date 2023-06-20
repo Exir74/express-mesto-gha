@@ -1,18 +1,36 @@
-const cardSchema = require('../models/cardSchema');
+const Card = require('../models/Card');
 
 module.exports.getCards = (req, res) => {
-  cardSchema.find({})
-    .then((cards) => res.send({ dat: cards }))
+  Card.find({})
+    .then((cards) => res.send({ data: cards }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
-  cardSchema.create({ name, link, owner: req.user._id })
+  Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
-    .catch((e) => res.status(500).send({ message: e }));
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка. Не удалось создать пользователя' }));
 };
 
-// module.exports.deleteCard = (req, res) => {
-//   if(!cardSchema[req.params._id])
-// };
+module.exports.deleteCard = (req, res) => {
+  Card.findByIdAndRemove(req.params.id)
+    .then((cards) => res.send({ data: cards }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+};
+
+module.exports.likeCard = (req, res) => Card.findByIdAndUpdate(
+  req.params.cardId,
+  { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+  { new: true },
+)
+  .then((likes) => res.send({ data: likes }))
+  .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+
+module.exports.dislikeCard = (req, res) => Card.findByIdAndUpdate(
+  req.params.cardId,
+  { $pull: { likes: req.user._id } }, // убрать _id из массива
+  { new: true },
+)
+  .then((likes) => res.send({ data: likes }))
+  .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));

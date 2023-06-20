@@ -1,4 +1,4 @@
-const userSchema = require('../models/userSchema');
+const userSchema = require('../models/User');
 
 module.exports.getUsers = (req, res) => {
   userSchema.find({})
@@ -7,6 +7,7 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUser = (req, res) => {
+  //
   userSchema.findById(req.params.id)
     .then((data) => {
       res.send(data);
@@ -15,9 +16,28 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  console.log(req);
   const { name, about, avatar } = req.body;
   userSchema.create({ name, about, avatar })
     .then((person) => res.send({ data: person }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+};
+
+module.exports.updateUserInfo = (req, res) => {
+  const { name, about } = req.body;
+  userSchema.findByIdAndUpdate(req.user._id, { name, about }, {
+    new: true,
+    runValidators: true,
+  })
+    .then((data) => res.send({ data }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+};
+
+module.exports.updateAvatar = (req, res) => {
+  const { avatar } = req.body;
+  userSchema.findByIdAndUpdate(req.user._id, { avatar }, {
+    new: true,
+    runValidators: true,
+  })
+    .then((data) => res.send({ data }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };

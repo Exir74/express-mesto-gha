@@ -13,15 +13,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
-app.use(userRouter);
-
 app.use((req, res, next) => {
   req.user = {
-    _id: '6490674affe6a1c3ea4d7be0',
+    _id: '64907361dc6b39f3015bd02e',
   };
 
   next();
 });
+app.use(userRouter);
 app.use(cardRouter);
 app.listen(PORT, () => {
   console.log(`Сервер запущен порт: ${PORT}...`);
