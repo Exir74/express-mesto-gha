@@ -7,13 +7,17 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUser = (req, res) => {
+  // console.log(userSchema.error());
   userSchema.findById(req.params.id)
     .then((user) => {
+      if (!user) {
+        res.status(404).res.send({ message: 'Такого пользователя нет' });
+        return;
+      }
       res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') return res.status(404).send({ message: 'Такого пользователя нет' });
-      return res.status(500).send({ message: 'Ошибка сервера' });
+    .catch(() => {
+      res.status(404).send({ message: 'Такого пользователя нет' });
     });
 };
 
