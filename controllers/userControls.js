@@ -6,20 +6,32 @@ module.exports.getUsers = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
-module.exports.getUser = (req, res) => {
-  // console.log(userSchema.error());
-  userSchema.findById(req.params.id)
-    .then((user) => {
-      if (!user) {
-        res.status(404).res.send({ message: 'Такого пользователя нет' });
-        return;
-      }
-      res.send(user);
-    })
-    .catch(() => {
+module.exports.getUser = async (req, res) => {
+  try {
+    const user = await userSchema.findById(req.params.id).exec();
+    res.send(user);
+  } catch (err) {
+    if (err.name === 'CastError') {
       res.status(404).send({ message: 'Такого пользователя нет' });
-    });
+    }
+  }
+  // .then((user) => {
+  //   res.send(user);
+  // })
+  // .catch(() => {
+  //   res.status(404).send({ message: 'Такого пользователя нет' });
+  // });
 };
+
+// module.exports.getUser = (req, res) => {
+//   userSchema.findById(req.params.id).exec()
+//     .then((user) => {
+//       res.send(user);
+//     })
+//     .catch(() => {
+//       res.status(404).send({ message: 'Такого пользователя нет' });
+//     });
+// };
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
