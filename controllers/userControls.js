@@ -15,7 +15,7 @@ module.exports.getUser = async (req, res) => {
     res.send(user);
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(404).send({ message: 'Такого пользователя нет' });
+      res.status(400).send({ message: 'Передан не верный id' });
     }
   }
   // .then((user) => {
