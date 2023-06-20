@@ -8,7 +8,10 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUser = async (req, res) => {
   try {
-    const user = await userSchema.findById(req.params.id).exec();
+    const user = await userSchema.findById(req.params.id);
+    if (!user) {
+      res.status(404).send({ message: 'Такого пользователя нет' });
+    }
     res.send(user);
   } catch (err) {
     if (err.name === 'CastError') {
