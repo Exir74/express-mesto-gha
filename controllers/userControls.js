@@ -11,7 +11,12 @@ module.exports.getUser = (req, res) => {
     .then((data) => {
       res.send(data);
     })
-    .catch(() => res.status(404).send({ message: 'Такого пользователя нет' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(404).send({ message: 'Такого пользователя нет' });
+      }
+      res.status(404).send({ message: 'Такого пользователя нет' });
+    });
 };
 
 module.exports.createUser = (req, res) => {
