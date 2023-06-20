@@ -8,13 +8,14 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUser = (req, res) => {
   userSchema.findById(req.params.id)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(404).send({ message: 'Такого пользователя нет' });
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'Такого пользователя нет' });
+        return;
       }
+      res.send(user);
+    })
+    .catch(() => {
       res.status(404).send({ message: 'Такого пользователя нет' });
     });
 };
