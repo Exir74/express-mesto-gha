@@ -7,19 +7,18 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUser = (req, res) => {
-  //
   userSchema.findById(req.params.id)
     .then((data) => {
       res.send(data);
     })
-    .catch(() => res.status(500).send({ message: 'Такого пользователя нет' }));
+    .catch(() => res.status(404).send({ message: 'Такого пользователя нет' }));
 };
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   userSchema.create({ name, about, avatar })
     .then((person) => res.send({ data: person }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(400).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.updateUserInfo = (req, res) => {
@@ -29,7 +28,7 @@ module.exports.updateUserInfo = (req, res) => {
     runValidators: true,
   })
     .then((data) => res.send({ data }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(404).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -39,5 +38,5 @@ module.exports.updateAvatar = (req, res) => {
     runValidators: true,
   })
     .then((data) => res.send({ data }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(400).send({ message: 'Произошла ошибка' }));
 };
