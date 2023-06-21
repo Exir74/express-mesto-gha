@@ -18,7 +18,13 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.id)
-    .then((cards) => res.send({ data: cards }))
+    .then((card) => {
+      if (!card === null) {
+        res.send({ data: card });
+      } else {
+        next(new NotFoundError('Карточка не найдена'));
+      }
+    })
     .catch(() => next(new NotFoundError('Карточка не найдена')));
 };
 
