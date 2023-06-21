@@ -6,27 +6,17 @@ module.exports.getUsers = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
-// module.exports.getUser = (req, res) => {
-//   userSchema.findById(req.params.id).exec()
-//     .then((user) => {
-//       if (!user) {
-//         res.status(404).send({ message: 'Пользователь не найден' });
-//         return;
-//       }
-//       res.send(user);
-//     })
-//     .catch(() => {
-//       res.status(400).send({ message: 'Id не верный' });
-//     });
-// };
-
 module.exports.getUser = (req, res) => {
   userSchema.findById(req.params.id).exec()
     .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'Пользователь не найден' });
+        return;
+      }
       res.send(user);
     })
     .catch(() => {
-      res.status(404).send({ message: 'Id не верный' });
+      res.status(400).send({ message: 'Id не верный' });
     });
 };
 
