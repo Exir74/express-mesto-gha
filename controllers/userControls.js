@@ -20,9 +20,9 @@ module.exports.getUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError('Не верный id'));
+        next(new ValidationError('Переданы некорректные данные'));
       } else {
-        next(new ServerError('Ошибка сервера'));
+        next(err);
       }
     });
 };
@@ -71,29 +71,57 @@ module.exports.getUser = (req, res, next) => {
 //       res.status(400).send({ message: 'Id не верный' });
 //     });
 // };
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((person) => res.send({ data: person }))
-    .catch(() => res.status(400).send({ message: 'Произошла ошибка' }));
+    .catch(() => next(new ValidationError('Переданы некорректные данные')));
 };
 
-module.exports.updateUserInfo = (req, res) => {
+module.exports.updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true,
     runValidators: true,
   })
-    .then((data) => res.send({ data }))
-    .catch(() => res.status(404).send({ message: 'Произошла ошибка' }));
+    .then((user) => {
+      if (user) {
+        res.send(user);
+      } else {
+        next(new NotFoundError('id не найден'));
+      }
+    })
+    .catch((err) => {
+      console.log(err.name);
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        next(new ValidationError('Переданы некорректные данныее'));
+      } else {
+        next(err);
+      }
+    });
+  // .then((data) => res.send({ data }))
+  // .catch(() => res.status(404).send({ message: 'Произошла ошибка' }));
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, {
     new: true,
     runValidators: true,
   })
-    .then((data) => res.send({ data }))
-    .catch(() => res.status(400).send({ message: 'Произошла ошибка' }));
+    .then((userAvatar) => {
+      if (userAvatar) {
+        res.send(userAvatar);
+      } else {
+        next(new NotFoundError('id не найден'));
+      }
+    })
+    .catch((err) => {
+      console.log(err.name);
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        next(new ValidationError('Переданы некорректные данныее'));
+      } else {
+        next(err);
+      }
+    });
 };

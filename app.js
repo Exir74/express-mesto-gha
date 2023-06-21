@@ -18,7 +18,7 @@ mongoose.connect(URL)
 // };
 app.use((req, res, next) => {
   req.user = {
-    _id: '64907361dc6b39f3015bd02e',
+    _id: '64907361dc6b39f3015bd03e',
   };
   next();
 });
@@ -28,6 +28,11 @@ app.use(cardRouter);
 app.use((err, req, res, next) => {
   res.status(err.statusCode).send({ message: err.message });
 });
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  res.status(err.statusCode).send({ message: 'Ошибка на стороне сервера' });
+});
+
 const startServer = () => {
   try {
     app.listen(PORT, () => {
