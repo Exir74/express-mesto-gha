@@ -16,23 +16,37 @@ module.exports.createCard = (req, res, next) => {
     .catch(() => next(new ValidationError('Переданы некорректные данные')));
 };
 
+// module.exports.deleteCard = (req, res, next) => {
+//   Card.findByIdAndRemove(req.params.id)
+//     .then((card) => {
+//       res.send({ data: card });
+//     })
+//     .catch(() => next(new NotFoundError('Карточка не найдена')));
+// };
+
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.id)
+  Card.findByIdAndRemove(
+    req.params.id,
+    { $pull: req.params.id },
+    { new: true },
+  )
     .then((card) => {
-      if (!card === null) {
-        res.send({ data: card });
+      if (card) {
+        res.send(card);
       } else {
-        next(new NotFoundError('Карточка не найдена'));
+        next(new NotFoundError('id не найден'));
       }
     })
-    .catch(() => next(new NotFoundError('Карточка не найдена')));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new ValidationError('Переданы некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
 
-module.exports.likeCard = (req, res, next) => Card.findByIdAndUpdate(
-  req.params.cardId,
-  { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-  { new: true },
-)
+module.exports.likeCard = (req, res, next) => Card.findByIdAndRemove(req.params.id)
   .then((likes) => {
     if (likes) {
       res.send(likes);
@@ -47,8 +61,6 @@ module.exports.likeCard = (req, res, next) => Card.findByIdAndUpdate(
       next(err);
     }
   });
-// .then((likes) => res.send({ data: likes }))
-// .catch(() => res.status(404).send({ message: 'Произошла ошибка' }));
 
 module.exports.dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
   req.params.cardId,
