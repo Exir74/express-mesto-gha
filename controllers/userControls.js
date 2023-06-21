@@ -1,35 +1,86 @@
-const userSchema = require('../models/User');
+const User = require('../models/User');
+const NotFoundError = require('../errors/NotFoundError');
+const ValidationError = require('../errors/ValidationError');
+const ServerError = require('../errors/ServerError');
 
-module.exports.getUsers = (req, res) => {
-  userSchema.find({})
+module.exports.getUsers = (req, res, next) => {
+  User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => next(new ServerError('Ошибка сервера')));
 };
 
-module.exports.getUser = (req, res) => {
-  userSchema.findById(req.params.id).exec()
+module.exports.getUser = (req, res, next) => {
+  User.findById(req.params.id)
     .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'Пользователь не найден' });
-        return;
+      if (user) {
+        res.send(user);
+      } else {
+        next(new NotFoundError('id не найден'));
       }
-      res.send(user);
     })
-    .catch(() => {
-      res.status(400).send({ message: 'Id не верный' });
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new ValidationError('Не верный id'));
+      } else {
+        next(new ServerError('Ошибка сервера'));
+      }
     });
 };
 
+// .then((user) => {
+//   if (user) { // если передал не валидный id
+//     return res.send(user);
+//   } // если пользователя не нашел
+//   // res.send(user);
+//   throw new NotFoundError('Пользователь с таким id на найден');
+// })
+// .catch((err) => {
+//   res.send(err.message);
+// });
+// };
+//     .then((user) => {
+//       if (!user) {
+//         console.log('Хтооооо????');
+//         throw new NotFoundError('Пользователь с таким id на найден');
+//       }
+//       res.send(user);
+//     })
+//     .catch((err) => {
+//       console.log(err.name);
+//       // res.status(err.statusCode).send({ message: err.message });
+//       if (err.name === 'CastError') {
+//         next(new ValidationError('Передан не верный id'));
+//         // res.status(err.statusCode).send({ message: err.message });
+//         res.send(ValidationError.name);
+//       // } else {
+//       //   next(err);
+//       }
+//     });
+// };
+
+// module.exports.getUser = (req, res) => {
+//   User.findById(req.params.id).exec()
+//     .then((user) => {
+//       if (!user) {
+//         res.status(404).send({ message: 'Пользователь не найден' });
+//         return;
+//       }
+//       res.send(user);
+//     })
+//     .catch(() => {
+//       res.status(400).send({ message: 'Id не верный' });
+//     });
+// };
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-  userSchema.create({ name, about, avatar })
+  User.create({ name, about, avatar })
     .then((person) => res.send({ data: person }))
     .catch(() => res.status(400).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.updateUserInfo = (req, res) => {
   const { name, about } = req.body;
-  userSchema.findByIdAndUpdate(req.user._id, { name, about }, {
+  User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true,
     runValidators: true,
   })
@@ -39,7 +90,7 @@ module.exports.updateUserInfo = (req, res) => {
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  userSchema.findByIdAndUpdate(req.user._id, { avatar }, {
+  User.findByIdAndUpdate(req.user._id, { avatar }, {
     new: true,
     runValidators: true,
   })

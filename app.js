@@ -12,12 +12,10 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// const dbConnect = () => {
 mongoose.connect(URL)
   .then(() => console.log(`db connected on ${URL}`))
   .catch((err) => console.log(`Ошибка подключения к БД: ${err.name}`));
 // };
-// dbConnect();
 app.use((req, res, next) => {
   req.user = {
     _id: '64907361dc6b39f3015bd02e',
@@ -26,10 +24,10 @@ app.use((req, res, next) => {
 });
 app.use(userRouter);
 app.use(cardRouter);
-
-// app.listen(PORT, () => {
-//   console.log(`Сервер запущен порт: ${PORT}...`);
-// });
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  res.status(err.statusCode).send({ message: err.message });
+});
 const startServer = () => {
   try {
     app.listen(PORT, () => {
