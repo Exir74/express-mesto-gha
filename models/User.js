@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const mongoose = require('mongoose');
 
-const User = new mongoose.Schema({
+const user = new mongoose.Schema({
   name: {
     type: String,
     minLength: 2,
@@ -20,4 +20,4 @@ const User = new mongoose.Schema({
     required: true,
   },
 });
-module.exports = mongoose.model('user', User);
+module.exports = mongoose.model('User', user);
