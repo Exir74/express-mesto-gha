@@ -16,7 +16,7 @@ module.exports.getUser = (req, res) => {
       res.send(user);
     })
     .catch(() => {
-      res.status(404).send({ message: 'Id не верный' });
+      res.status(400).send({ message: 'Id не верный' });
     });
 };
 
