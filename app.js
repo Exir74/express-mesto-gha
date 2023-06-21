@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const userRouter = require('./routes/usersRoutes');
 const cardRouter = require('./routes/cardsRoutes');
+const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000 } = process.env;
 const URL = 'mongodb://localhost:27017/mestodb';
@@ -24,6 +25,10 @@ app.use((req, res, next) => {
 });
 app.use(userRouter);
 app.use(cardRouter);
+
+app.all('*', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
+});
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   res.status(err.statusCode).send({ message: err.message });
