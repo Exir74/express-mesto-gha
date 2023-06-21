@@ -26,51 +26,6 @@ module.exports.getUser = (req, res, next) => {
       }
     });
 };
-
-// .then((user) => {
-//   if (user) { // если передал не валидный id
-//     return res.send(user);
-//   } // если пользователя не нашел
-//   // res.send(user);
-//   throw new NotFoundError('Пользователь с таким id на найден');
-// })
-// .catch((err) => {
-//   res.send(err.message);
-// });
-// };
-//     .then((user) => {
-//       if (!user) {
-//         console.log('Хтооооо????');
-//         throw new NotFoundError('Пользователь с таким id на найден');
-//       }
-//       res.send(user);
-//     })
-//     .catch((err) => {
-//       console.log(err.name);
-//       // res.status(err.statusCode).send({ message: err.message });
-//       if (err.name === 'CastError') {
-//         next(new ValidationError('Передан не верный id'));
-//         // res.status(err.statusCode).send({ message: err.message });
-//         res.send(ValidationError.name);
-//       // } else {
-//       //   next(err);
-//       }
-//     });
-// };
-
-// module.exports.getUser = (req, res) => {
-//   User.findById(req.params.id).exec()
-//     .then((user) => {
-//       if (!user) {
-//         res.status(404).send({ message: 'Пользователь не найден' });
-//         return;
-//       }
-//       res.send(user);
-//     })
-//     .catch(() => {
-//       res.status(400).send({ message: 'Id не верный' });
-//     });
-// };
 module.exports.createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
