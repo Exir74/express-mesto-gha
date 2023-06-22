@@ -1,12 +1,17 @@
 const User = require('../models/User');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
-const ServerError = require('../errors/ServerError');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => next(new ServerError('Ошибка сервера')));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new ValidationError('Переданы некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.getUser = (req, res, next) => {
@@ -30,7 +35,13 @@ module.exports.createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((person) => res.send({ data: person }))
-    .catch(() => next(new ValidationError('Переданы некорректные данные')));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new ValidationError('Переданы некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.updateUserInfo = (req, res, next) => {
@@ -54,8 +65,6 @@ module.exports.updateUserInfo = (req, res, next) => {
         next(err);
       }
     });
-  // .then((data) => res.send({ data }))
-  // .catch(() => res.status(404).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.updateAvatar = (req, res, next) => {

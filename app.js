@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const userRouter = require('./routes/usersRoutes');
 const cardRouter = require('./routes/cardsRoutes');
 const notFoundErrorHandler = require('./errors/notFoundErrorHandler');
-const serverErrorHandler = require('./errors/serverErrorHandler');
 const errorHandler = require('./errors/errorHandler');
 
 const { PORT = 3000 } = process.env;
@@ -29,7 +28,7 @@ app.use((req, res, next) => {
 app.use(userRouter);
 app.use(cardRouter);
 app.use(notFoundErrorHandler);
-app.use(serverErrorHandler);
+// app.use(serverErrorHandler);
 
 app.use(errorHandler);
 

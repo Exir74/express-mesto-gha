@@ -6,14 +6,27 @@ const NotFoundError = require('../errors/NotFoundError');
 module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => next(new ServerError('Ошибка сервера')));
+    // .catch(() => next(new ServerError('Ошибка сервера')));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError('Переданы некорректные данные'));
+      } else {
+        next(new ServerError('Ошибка сервера'));
+      }
+    });
 };
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
-    .catch(() => next(new ValidationError('Переданы некорректные данные')));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError('Переданы некорректные данные'));
+      } else {
+        next(new ServerError('Ошибка сервера'));
+      }
+    });
 };
 
 // module.exports.deleteCard = (req, res, next) => {
@@ -84,5 +97,3 @@ module.exports.dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
       next(err);
     }
   });
-// .then((likes) => res.send({ data: likes }))
-// .catch(() => res.status(404).send({ message: 'Произошла ошибка' }));
