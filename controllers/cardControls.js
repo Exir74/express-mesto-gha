@@ -27,8 +27,6 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(
     req.params.cardId,
-    { $pull: req.params.cardId },
-    { new: true },
   )
     .then((card) => {
       if (card) {
