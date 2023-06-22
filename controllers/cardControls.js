@@ -1,5 +1,5 @@
 const Card = require('../models/Card');
-const ServerError = require('../errors/ServerError');
+// const ServerError = require('../errors/ServerError');
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
 
@@ -11,7 +11,7 @@ module.exports.getCards = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные'));
       } else {
-        next(new ServerError('Ошибка сервера'));
+        next(err);
       }
     });
 };
@@ -20,11 +20,12 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
+    // .catch(() => next(new ValidationError('Переданы некорректные данные')));
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные'));
       } else {
-        next(new ServerError('Ошибка сервера'));
+        next(err);
       }
     });
 };
