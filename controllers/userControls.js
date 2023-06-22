@@ -5,7 +5,6 @@ const ValidationError = require('../errors/ValidationError');
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    // .catch(() => next(new ServerError('Ошибка сервера')));
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные'));
@@ -36,7 +35,6 @@ module.exports.createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((person) => res.send({ data: person }))
-    // .catch(() => next(new ValidationError('Переданы некорректные данные')));
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные'));
@@ -67,8 +65,6 @@ module.exports.updateUserInfo = (req, res, next) => {
         next(err);
       }
     });
-  // .then((data) => res.send({ data }))
-  // .catch(() => res.status(404).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.updateAvatar = (req, res, next) => {

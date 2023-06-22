@@ -1,5 +1,4 @@
 const Card = require('../models/Card');
-// const ServerError = require('../errors/ServerError');
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
 
@@ -29,14 +28,6 @@ module.exports.createCard = (req, res, next) => {
       }
     });
 };
-
-// module.exports.deleteCard = (req, res, next) => {
-//   Card.findByIdAndRemove(req.params.id)
-//     .then((card) => {
-//       res.send({ data: card });
-//     })
-//     .catch(() => next(new NotFoundError('Карточка не найдена')));
-// };
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(
