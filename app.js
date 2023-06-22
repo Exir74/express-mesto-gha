@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.connect(URL)
   .then(() => console.log(`db connected on ${URL}`))
   .catch((err) => console.log(`Ошибка подключения к БД: ${err.name}`));
-// };
+
 app.use((req, res, next) => {
   req.user = {
     _id: '64907361dc6b39f3015bd03e',
