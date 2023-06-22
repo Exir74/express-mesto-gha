@@ -28,7 +28,6 @@ app.use((req, res, next) => {
 app.use(userRouter);
 app.use(cardRouter);
 app.use(notFoundErrorHandler);
-// app.use(serverErrorHandler);
 
 app.use(errorHandler);
 
