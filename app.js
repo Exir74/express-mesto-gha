@@ -5,6 +5,7 @@ const userRouter = require('./routes/usersRoutes');
 const cardRouter = require('./routes/cardsRoutes');
 const notFoundErrorHandler = require('./errors/notFoundErrorHandler');
 const serverErrorHandler = require('./errors/serverErrorHandler');
+const errorHandler = require('./errors/errorHandler');
 
 const { PORT = 3000 } = process.env;
 const URL = 'mongodb://localhost:27017/mestodb';
@@ -24,21 +25,13 @@ app.use((req, res, next) => {
   };
   next();
 });
-// Вынесли код возврата промиса с ошибкой во внешнюю функцию
 
 app.use(userRouter);
 app.use(cardRouter);
 app.use(notFoundErrorHandler);
 app.use(serverErrorHandler);
 
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  res.status(err.statusCode).send({ message: err.message });
-});
-// eslint-disable-next-line no-unused-vars
-// app.use((err, req, res, next) => {
-//   res.status(err.statusCode).send({ message: 'Ошибка на стороне сервера' });
-// });
+app.use(errorHandler);
 
 const startServer = () => {
   try {
@@ -46,6 +39,7 @@ const startServer = () => {
       console.log(`Сервер запущен порт: ${PORT}...`);
     });
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log(err.name);
   }
 };
