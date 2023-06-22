@@ -38,7 +38,6 @@ const startServer = () => {
       console.log(`Сервер запущен порт: ${PORT}...`);
     });
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err.name);
   }
 };
