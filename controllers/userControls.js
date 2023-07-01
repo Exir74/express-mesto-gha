@@ -1,3 +1,4 @@
+const validator = require('validator');
 const User = require('../models/User');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
@@ -31,17 +32,29 @@ module.exports.getUser = (req, res, next) => {
       }
     });
 };
+
 module.exports.createUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((person) => res.send({ data: person }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные'));
-      } else {
-        next(err);
-      }
-    });
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  if (validator.isEmail(email)) {
+    User.create({
+      name, about, avatar, email, password,
+    })
+      .then((person) => res.send({ data: person }))
+      .catch((err) => {
+        if (err.name === 'ValidationError') {
+          next(new ValidationError('Переданы некорректные данные'));
+        } else if (err.code === 11000) {
+          next(new ValidationError('Email ЗАНЯТ И КОД ОШИБКИ УКАЗАН НЕ ВРЕНЫЙ'));
+        } else {
+          next(err);
+        }
+        // res.send(err);
+      });
+  } else {
+    throw (new ValidationError('Неверная почта или пароль'));
+  }
 };
 
 module.exports.updateUserInfo = (req, res, next) => {
