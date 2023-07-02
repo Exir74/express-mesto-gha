@@ -1,6 +1,7 @@
 const Card = require('../models/Card');
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
+const { login } = require('./userControls');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -28,23 +29,25 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(
-    req.params.cardId,
-  )
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (card) {
-        res.send(card);
+        const owner = card.owner.toString();
+        if (owner !== req.user._id) {
+          throw new NotFoundError('ОШИБКААА');
+        } else {
+          return card;
+        }
       } else {
-        next(new NotFoundError('id не найден'));
+        throw new NotFoundError('Карточка не найдена');
       }
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new ValidationError('Переданы некорректные данные'));
-      } else {
-        next(err);
-      }
-    });
+    .then((card) => {
+      Card.findByIdAndRemove(card._id.toString())
+        .then(() => res.send(card))
+        .catch(next);
+    })
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res, next) => Card.findByIdAndUpdate(

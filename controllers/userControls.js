@@ -40,25 +40,28 @@ module.exports.createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
   if (validator.isEmail(email)) {
-    bcrypt.hash(password, 10)
-      .then((hash) => {
-        User.create({
-          name, about, avatar, email, password: hash,
-        })
-          .then((person) => res.send({ data: person }))
-          .catch((err) => {
-            if (err.name === 'ValidationError') {
-              next(new ValidationError('Переданы некорректные данные'));
-            } else if (err.code === 11000) {
-              next(new ValidationError('Email ЗАНЯТ И КОД ОШИБКИ УКАЗАН НЕ ВРЕНЫЙ'));
-            } else {
-              next(err);
-            }
-            // res.send(err);
-          });
-      });
+    if (!password) {
+      throw (new ValidationError('Введите пароль'));
+    } else {
+      bcrypt.hash(password, 10)
+        .then((hash) => {
+          User.create({
+            name, about, avatar, email, password: hash,
+          })
+            .then((person) => res.send({ data: person }))
+            .catch((err) => {
+              if (err.code === 11000) {
+                const error = new Error('Такой email уже зарегистрирован');
+                error.statusCode = 409;
+                next(error);
+              } else if (err.name === 'ValidationError') {
+                next(new ValidationError('Переданы некорректные данные'));
+              } else next(err);
+            });
+        });
+    }
   } else {
-    throw (new ValidationError('Неверная почта или пароль'));
+    throw (new ValidationError('Введите корректную почту'));
   }
 };
 
@@ -76,7 +79,6 @@ module.exports.updateUserInfo = (req, res, next) => {
       }
     })
     .catch((err) => {
-      console.log(err.name);
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данныее'));
       } else {
@@ -123,18 +125,22 @@ module.exports.login = (req, res, next) => {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
         })
+        .send(user)
         .end();
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+      console.log({ err });
+      next(err);
     });
 };
 
 module.exports.getUserInfo = (req, res, next) => {
-  console.log(req.user);
   User.findById(req.user._id)
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => res.send('err.name'));
+    .catch((err) => {
+      res.send(err);
+      next();
+    });
 };

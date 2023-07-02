@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const ValidationError = require('../errors/ValidationError');
+const validator = require('validator');
 
 const user = new mongoose.Schema({
   name: {
@@ -23,57 +22,24 @@ const user = new mongoose.Schema({
   },
   email: {
     type: String,
+    validate: {
+      validator: (v) => validator.isEmail(v),
+      message: 'Введен некорректный адрес почты',
+    },
     required: true,
     unique: true,
   },
   password: {
     type: String,
     required: true,
-
+    select: false,
   },
 });
 
-// user.static.findUserByCredentials = function (email, password) {
-//   return this.findOne({ email })
-//     .then((userData) => {
-//       if (!userData) {
-//         return Promise.reject(new ValidationError('Неверные почта или пароль'));
-//       }
-//       return bcrypt.compare(password, userData.password);
-//     });
-// };
-
-// module.exports.login = (req, res) => {
-//   const { email, password } = req.body;
-//   user.findOne({ email })
-//     .then((userData) => {
-//       if (!userData) {
-//         throw (new Error('Неправильные почта или пароль'));
-//       }
-//       return bcrypt.compare(password, userData.password)
-//         .then((matched) => {
-//           if (!matched) {
-//             return Promise.reject(new Error('Неправильные почта или пароль'));
-//           }
-//           // Дописал ниже ретерн возможно не нужен
-//           // const token = jwt.sign(
-//           //   { _id: userData._id },
-//           //   process.env.JWT_SECRET,
-//           //   { expiresIn: '7d' },
-//           // );
-//           return userData;
-//         });
-//     })
-//     .catch((err) => {
-//       res
-//         .status(401)
-//         .send({ message: err.message });
-//     });
-// };
-
-user.statics.findUserByCredentials = function (email, password) {
-  return this.findOne({ email })
+user.statics.findUserByCredentials = function finderUser(email, password) {
+  return this.findOne({ email }).select('+password')
     .then((userData) => {
+      console.log(userData);
       if (!userData) {
         return Promise.reject(new Error('Неправильные почта или пароль'));
       }
@@ -83,7 +49,10 @@ user.statics.findUserByCredentials = function (email, password) {
             return Promise.reject(new Error('Неправильные почта или пароль'));
           }
           return userData;
-        });
-    });
+        })
+        .catch(() => Promise.reject(new Error('Неправильные почта или пароль')));
+    })
+    .catch(() => Promise.reject(new Error('Неправильные почта или пароль')));
 };
+
 module.exports = mongoose.model('User', user);
