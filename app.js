@@ -3,6 +3,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const { celebrate } = require('celebrate');
+const Joi = require('joi');
+const { errors } = require('celebrate');
 const userRouter = require('./routes/usersRoutes');
 const cardRouter = require('./routes/cardsRoutes');
 const notFoundErrorHandler = require('./errors/notFoundErrorHandler');
@@ -32,6 +35,15 @@ app.use(cookieParser());
 app.get('/test', (req, res) => {
   res.send(req.user);
 });
+// app.post('/signin', celebrate({
+//   body: Joi.object().keys({
+//     name: Joi.string().min(2).max(30),
+//     about: Joi.string().min(2).max(30),
+//     avatar: Joi.string(),
+//     email: Joi.string().required().email(),
+//     password: Joi.string().required(),
+//   }),
+// }), login);
 app.post('/signin', login);
 app.post('/signup', createUser);
 app.use(auth);
@@ -39,6 +51,7 @@ app.use(userRouter);
 app.use(cardRouter);
 app.use(notFoundErrorHandler);
 
+// app.use(errors());
 app.use(errorHandler);
 
 const startServer = () => {

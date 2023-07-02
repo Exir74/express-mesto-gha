@@ -112,26 +112,29 @@ module.exports.updateAvatar = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        process.env.JWT_SECRET,
-        { expiresIn: '7d' },
-      );
-      // res.send({ token });
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-        })
-        .send(user)
-        .end();
-    })
-    .catch((err) => {
-      console.log({ err });
-      next(err);
-    });
+  if (validator.isEmail(email)) {
+    return User.findUserByCredentials(email, password)
+      .then((user) => {
+        const token = jwt.sign(
+          { _id: user._id },
+          process.env.JWT_SECRET,
+          { expiresIn: '7d' },
+        );
+        // res.send({ token });
+        res
+          .cookie('jwt', token, {
+            maxAge: 3600000 * 24 * 7,
+            httpOnly: true,
+          })
+          .send(user)
+          .end();
+      })
+      .catch((err) => {
+        console.log({ err });
+        next(err);
+      });
+  }
+  throw (new ValidationError('Введите корректную почту'));
 };
 
 module.exports.getUserInfo = (req, res, next) => {
