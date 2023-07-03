@@ -9,10 +9,6 @@ const user = new mongoose.Schema({
     minLength: [2, 'Поле name должно быть больше 2 символов'],
     maxLength: [30, 'Поле name должно быть меньше 30 символов'],
     default: 'Жак-Ив Кусто',
-    // validate: {
-    //   validator: (name) => validator.isLength(name, { min: 2, max: 30 }),
-    //   message: 'sss',
-    // },
   },
   about: {
     type: String,
@@ -56,7 +52,16 @@ user.statics.login = function (email, password, next) {
         })
         .catch(next);
     })
+
     .catch(next);
 };
+
+user.set('toJSON', {
+  transform(doc, ret) {
+    // eslint-disable-next-line no-param-reassign
+    delete ret.password;
+    return ret;
+  },
+});
 
 module.exports = mongoose.model('User', user);
