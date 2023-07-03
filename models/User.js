@@ -6,8 +6,8 @@ const bcrypt = require('bcrypt');
 const user = new mongoose.Schema({
   name: {
     type: String,
-    minLength: [2, 'Мало символов'],
-    maxLength: 30,
+    minLength: [2, 'Поле name должно быть больше 2 символов'],
+    maxLength: [30, 'Поле name должно быть меньше 30 символов'],
     default: 'Жак-Ив Кусто',
     // validate: {
     //   validator: (name) => validator.isLength(name, { min: 2, max: 30 }),
@@ -16,8 +16,8 @@ const user = new mongoose.Schema({
   },
   about: {
     type: String,
-    minLength: [2, 'Поле "О себе" должно быть больше 2 символов'],
-    maxLength: [30, 'Поле "О себе" должно быть меньше 30 символов'],
+    minLength: [2, 'Поле about должно быть больше 2 символов'],
+    maxLength: [30, 'Поле about должно быть меньше 30 символов'],
     default: 'Исследователь',
   },
   avatar: {

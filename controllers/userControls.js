@@ -58,10 +58,9 @@ module.exports.createUser = (req, res, next) => {
           if (err.name === 'ValidationError' && !err.message) {
             next(new ValidationError('Переданы некорректные данные'));
           } else if (err.code === 11000) {
-            // createError('Такой email уже зарегистрирорван', 409, next);
-            res.send(err);
+            createError('Такой email уже зарегистрирорван', 409, next);
           } else if (err.message.includes('User validation failed:')) { // Скорее всего нужно будет убрать
-            createError(err.message, 401, next); // Скорее всего нужно будет убрать
+            createError(err.message, 400, next); // Скорее всего нужно будет убрать
           } else {
             next(err);
           }
