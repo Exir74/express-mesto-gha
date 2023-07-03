@@ -6,14 +6,18 @@ const bcrypt = require('bcrypt');
 const user = new mongoose.Schema({
   name: {
     type: String,
-    minLength: 2,
+    minLength: [2, 'Мало символов'],
     maxLength: 30,
     default: 'Жак-Ив Кусто',
+    // validate: {
+    //   validator: (name) => validator.isLength(name, { min: 2, max: 30 }),
+    //   message: 'sss',
+    // },
   },
   about: {
     type: String,
-    minLength: 2,
-    maxLength: 30,
+    minLength: [2, 'Поле "О себе" должно быть больше 2 символов'],
+    maxLength: [30, 'Поле "О себе" должно быть меньше 30 символов'],
     default: 'Исследователь',
   },
   avatar: {
@@ -26,13 +30,13 @@ const user = new mongoose.Schema({
     unique: true,
     validate: {
       validator: (email) => validator.isEmail(email),
-      message: 'Введен не коректный email',
+      message: 'Введен не корректный email',
     },
   },
   password: {
     type: String,
     required: true,
-    minLength: 3,
+    minLength: [3, 'Пароль должен быть не меньше 3 символов'],
     select: false,
   },
 });
