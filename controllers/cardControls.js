@@ -35,7 +35,7 @@ module.exports.deleteCard = (req, res, next) => {
         console.log(owner === req.user._id);
         if (owner !== req.user._id) {
           const error = new Error('Можно удалять только свою карточку');
-          error.statusCode = 401;
+          error.statusCode = 403;
           next(error);
         } else {
           return card;
