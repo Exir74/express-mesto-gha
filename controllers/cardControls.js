@@ -39,9 +39,9 @@ module.exports.deleteCard = (req, res, next) => {
         } else {
           return card;
         }
-      } else {
-        throw new NotFoundError('Карточка не найдена');
+        return (card);
       }
+      throw new NotFoundError('Карточка не найдена');
     })
     .then((card) => {
       Card.findByIdAndRemove(card._id.toString())
