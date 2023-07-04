@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
-const { JWT_SECRET } = require('../utils/constants');
+const { JWT_SECRET, UNAUTHORIZED, CONFLICT } = require('../utils/constants');
 
 function createError(errMessage, statusCode, next) {
   const error = new Error(errMessage);
@@ -47,7 +47,7 @@ module.exports.createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
   if (!password) {
-    throw createError('Введите пароль', 401, next);
+    throw createError('Введите пароль', UNAUTHORIZED, next);
   } else {
     bcrypt.hash(password, 10)
       .then((hash) => User.create({
@@ -60,9 +60,9 @@ module.exports.createUser = (req, res, next) => {
           if (err.name === 'ValidationError' && !err.message) {
             next(new ValidationError('Переданы некорректные данные'));
           } else if (err.code === 11000) {
-            createError('Такой email уже зарегистрирорван', 409, next);
+            createError('Такой email уже зарегистрирорван', CONFLICT, next);
           } else if (err.message.includes('User validation failed:')) { // Скорее всего нужно будет убрать
-            createError(err.message, 400, next); // Скорее всего нужно будет убрать
+            next(new ValidationError(err.message));
           } else {
             next(err);
           }
@@ -133,7 +133,7 @@ module.exports.login = (req, res, next) => {
         .end();
     })
     .catch((err) => {
-      createError(err.message, 401, next);
+      createError(err.message, UNAUTHORIZED, next);
       console.log(err.statusCode);
       next(err);
     });

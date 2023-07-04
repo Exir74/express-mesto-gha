@@ -1,6 +1,7 @@
 const Card = require('../models/Card');
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
+const { FORBIDDEN } = require('../utils/constants');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -35,7 +36,7 @@ module.exports.deleteCard = (req, res, next) => {
         console.log(owner === req.user._id);
         if (owner !== req.user._id) {
           const error = new Error('Можно удалять только свою карточку');
-          error.statusCode = 403;
+          error.statusCode = FORBIDDEN;
           next(error);
         } else {
           return card;
