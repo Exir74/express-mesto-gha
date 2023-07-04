@@ -37,7 +37,7 @@ const user = new mongoose.Schema({
   },
 });
 
-user.statics.login = function (email, password, next) {
+user.statics.login = function login(email, password, next) {
   return this.findOne({ email }).select('+password')
     .then((userData) => {
       if (!userData) {
