@@ -9,7 +9,7 @@ const notFoundErrorHandler = require('./errors/notFoundErrorHandler');
 const errorHandler = require('./errors/errorHandler');
 const { login, createUser } = require('./controllers/userControls');
 const auth = require('./middlewares/auth');
-const validationUser = require('./middlewares/validatorUser');
+const { userValidator } = require('./middlewares/validatorUser');
 
 const { PORT = 3000 } = process.env;
 const URL = 'mongodb://localhost:27017/mestodb';
@@ -24,8 +24,9 @@ mongoose.connect(URL)
   .then(() => console.log(`db connected on ${URL}`))
   .catch((err) => console.log(`Ошибка подключения к БД: ${err.name}`));
 
-app.post('/signin', validationUser, login);
-app.post('/signup', validationUser, createUser);
+app.post('/signin', userValidator, login);
+app.post('/signup', userValidator, createUser);
+
 app.use(auth);
 app.use(userRouter);
 app.use(cardRouter);

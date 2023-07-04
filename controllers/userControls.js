@@ -4,7 +4,6 @@ const User = require('../models/User');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
 
-let currentUser;
 function createError(errMessage, statusCode, next) {
   const error = new Error(errMessage);
   error.statusCode = statusCode;
