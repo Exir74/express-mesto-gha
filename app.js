@@ -9,7 +9,7 @@ const notFoundErrorHandler = require('./errors/notFoundErrorHandler');
 const errorHandler = require('./errors/errorHandler');
 const { login, createUser } = require('./controllers/userControls');
 const auth = require('./middlewares/auth');
-const { userValidator } = require('./middlewares/validatorUser');
+const { userValidator } = require('./middlewares/validator');
 
 const { PORT = 3000 } = process.env;
 const URL = 'mongodb://localhost:27017/mestodb';
