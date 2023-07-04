@@ -32,6 +32,7 @@ module.exports.deleteCard = (req, res, next) => {
     .then((card) => {
       if (card) {
         const owner = card.owner.toString();
+        console.log(owner === req.user._id);
         if (owner !== req.user._id) {
           const error = new Error('Можно удалять только свою карточку');
           error.statusCode = 401;
@@ -39,7 +40,6 @@ module.exports.deleteCard = (req, res, next) => {
         } else {
           return card;
         }
-        return (card);
       }
       throw new NotFoundError('Карточка не найдена');
     })

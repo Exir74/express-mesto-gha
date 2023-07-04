@@ -4,40 +4,40 @@ const regex = /^http(:|s:)\/\/.*/;
 
 const getUserValidator = celebrate({
   params: Joi.object().keys({
-    id: Joi.string().id(),
+    id: Joi.string().hex().length(24).required(),
   }),
 });
 
 const getCurrentUserValidation = celebrate({
   query: Joi.object().keys({
-    id: Joi.string().id(),
+    id: Joi.string().hex().length(24).required(),
   }),
 });
 
 const updateUserInfoValidation = celebrate({
   query: Joi.object().keys({
-    id: Joi.string().id(),
+    id: Joi.string().hex().length(24).required(),
   }),
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
+    name: Joi.string().min(2).max(30).required(),
+    about: Joi.string().min(2).max(30).required(),
   }),
 });
 
 const updateAvatarValidation = celebrate({
   query: Joi.object().keys({
-    id: Joi.string().id(),
+    id: Joi.string().hex().length(24).required(),
   }),
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(regex),
+    avatar: Joi.string().pattern(regex).required(),
 
   }),
 });
 
 const userValidator = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().min(2).email(),
-    password: Joi.string().required().min(5),
+    email: Joi.string().min(2).email().required(),
+    password: Joi.string().min(5).required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().pattern(regex),
@@ -46,8 +46,8 @@ const userValidator = celebrate({
 
 const updateUserValidator = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
+    name: Joi.string().min(2).max(30).required(),
+    about: Joi.string().min(2).max(30).required(),
   }),
 });
 
