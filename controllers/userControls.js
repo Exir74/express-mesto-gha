@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
+const { JWT_SECRET } = require('../utils/constants');
 
 function createError(errMessage, statusCode, next) {
   const error = new Error(errMessage);
@@ -120,7 +121,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        process.env.JWT_SECRET,
+        JWT_SECRET,
         { expiresIn: '7d' },
       );
       res
