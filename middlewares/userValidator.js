@@ -1,6 +1,6 @@
 const { celebrate, Joi } = require('celebrate');
 
-const regex = /^http(:|s:)\/\/.*/;
+const regex = /http(:|s:)\/\/(www|)[\w\d\S]+/i;
 
 const getUserValidator = celebrate({
   params: Joi.object().keys({
