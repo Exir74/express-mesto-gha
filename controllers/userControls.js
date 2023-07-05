@@ -5,14 +5,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const AuthError = require('../errors/AuthError');
 const ConflictError = require('../errors/ConflictError');
-const { JWT_SECRET, UNAUTHORIZED, CONFLICT } = require('../utils/constants');
-
-function createError(errMessage, statusCode, next) {
-  const error = new Error(errMessage);
-  error.statusCode = statusCode;
-  next(error);
-  return (error);
-}
+const { JWT_SECRET } = require('../utils/constants');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
