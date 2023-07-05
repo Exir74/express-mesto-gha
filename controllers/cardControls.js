@@ -1,18 +1,13 @@
 const Card = require('../models/Card');
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
+const ForbiddenError = require('../errors/ForbiddenError');
 const { FORBIDDEN } = require('../utils/constants');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -20,11 +15,9 @@ module.exports.createCard = (req, res, next) => {
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      // if (err.name === 'ValidationError') {
-      //   next(new ValidationError('Переданы некорректные данные'));
-      // } else {
-      //   next(err);
-      // }
+      if (err.name === 'ValidationError') {
+        next(new ValidationError('Переданы некорректные данные'));
+      }
       next(err);
     });
 };
@@ -38,6 +31,7 @@ module.exports.deleteCard = (req, res, next) => {
           const error = new Error('Можно удалять только свою карточку');
           error.statusCode = FORBIDDEN;
           next(error);
+          next(new ForbiddenError());
         } else {
           return card;
         }
@@ -65,14 +59,7 @@ module.exports.likeCard = (req, res, next) => Card.findByIdAndUpdate(
       next(new NotFoundError('id не найден'));
     }
   })
-  .catch((err) => {
-    // if (err.name === 'CastError') {
-    //   next(new ValidationError('Переданы некорректные данные'));
-    // } else {
-    //   next(err);
-    // }
-    next(err);
-  });
+  .catch(next);
 
 module.exports.dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
   req.params.cardId,
@@ -86,11 +73,4 @@ module.exports.dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
       next(new NotFoundError('id не найден'));
     }
   })
-  .catch((err) => {
-    // if (err.name === 'CastError') {
-    //   next(new ValidationError('Переданы некорректные данные'));
-    // } else {
-    //   next(err);
-    // }
-    next(err);
-  });
+  .catch(next);

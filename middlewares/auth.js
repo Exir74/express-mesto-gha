@@ -1,21 +1,18 @@
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET, UNAUTHORIZED } = require('../utils/constants');
+const { JWT_SECRET } = require('../utils/constants');
+const AuthError = require('../errors/AuthError');
 
 module.exports = (req, res, next) => {
   const authorization = req.cookies.jwt;
   if (!authorization) {
-    const error = new Error('Необходма авторизация');
-    error.statusCode = UNAUTHORIZED;
-    next(error);
+    next(new AuthError('Необходима авторизация'));
   }
   const token = authorization.replace('Bearer ', '');
   let payload;
   try {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    const error = new Error('Переда не верный токен');
-    error.statusCode = UNAUTHORIZED;
-    next(error);
+    next(new AuthError('Необходима авторизация'));
   }
   req.user = payload;
   next();

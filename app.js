@@ -11,6 +11,7 @@ const errorHandler = require('./errors/errorHandler');
 const { login, createUser } = require('./controllers/userControls');
 const auth = require('./middlewares/auth');
 const { userValidator } = require('./middlewares/userValidator');
+const signout = require('./middlewares/signout');
 
 const { PORT = 3000 } = process.env;
 const URL = 'mongodb://localhost:27017/mestodb';
@@ -31,6 +32,7 @@ app.post('/signup', userValidator, createUser);
 app.use(auth);
 app.use(userRouter);
 app.use(cardRouter);
+app.get('/signout', signout);
 app.use(notFoundErrorHandler);
 
 app.use(errors());

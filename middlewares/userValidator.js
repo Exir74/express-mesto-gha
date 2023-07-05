@@ -1,18 +1,10 @@
 const { celebrate, Joi } = require('celebrate');
 
-const regex = /http(:|s:)\/\/(www|)[\w\d\S]+/i;
+const regex = /http(:|s:)\/\/(www|)[\w\d\S]+[.][\w\d\S]{2,}(|\/)/i;
 
 const getUserValidator = celebrate({
   params: Joi.object().keys({
     id: Joi.string().hex().length(24).required(),
-  }),
-});
-
-const getCurrentUserValidation = celebrate({
-  query: Joi.object().keys({
-    user: Joi.object().keys({
-      _id: Joi.string().hex().length(24).required(),
-    }),
   }),
 });
 
@@ -59,7 +51,6 @@ const updateUserValidator = celebrate({
 
 module.exports = {
   getUserValidator,
-  getCurrentUserValidation,
   updateUserInfoValidation,
   userValidator,
   updateUserValidator,

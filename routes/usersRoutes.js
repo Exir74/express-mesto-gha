@@ -4,13 +4,12 @@ const {
 } = require('../controllers/userControls');
 const {
   getUserValidator,
-  getCurrentUserValidation,
   updateUserValidator,
   updateAvatarValidation,
   userValidator,
 } = require('../middlewares/userValidator');
 
-router.get('/users/me', getCurrentUserValidation, getCurrentUserInfo);
+router.get('/users/me', getCurrentUserInfo);
 router.get('/users', getUsers);
 router.get('/users/:id', getUserValidator, getUser);
 router.post('/users', userValidator, createUser);

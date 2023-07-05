@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
+const AuthError = require('../errors/AuthError');
+const ConflictError = require('../errors/ConflictError');
 const { JWT_SECRET, UNAUTHORIZED, CONFLICT } = require('../utils/constants');
 
 function createError(errMessage, statusCode, next) {
@@ -47,33 +49,21 @@ module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (!password) {
-    throw createError('Введите пароль', UNAUTHORIZED, next);
-  } else {
-    bcrypt.hash(password, 10)
-      .then((hash) => User.create({
-        name, about, avatar, email, password: hash,
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    })
+      .then((person) => {
+        res.send({ data: person });
       })
-        .then((person) => {
-          res.send({ data: person });
-        })
-        .catch((err) => {
-          // if (err.name === 'ValidationError' && !err.message) {
-          //   next(new ValidationError('Переданы некорректные данные'));
-          // } else if (err.code === 11000) {
-          //   createError('Такой email уже зарегистрирорван', CONFLICT, next);
-          // } else if
-          // (err.message.includes('User validation failed:')) { // Скорее всего нужно будет убрать
-          //   next(new ValidationError(err.message));
-          // } else {
-          //   next(err);
-          // }
-          if (err.code === 11000) {
-            createError('Такой email уже зарегистрирорван', CONFLICT, next);
-          }
-          next(err);
-        }));
-  }
+      .catch((err) => {
+        if (err.name === 'ValidationError' && !err.message) {
+          next(new ValidationError('Переданы некорректные данные'));
+        } else if (err.code === 11000) {
+          next(new ConflictError('Такой email уже зарегистрирорван'));
+        }
+        next(err);
+      }));
 };
 
 module.exports.updateUserInfo = (req, res, next) => {
@@ -90,8 +80,9 @@ module.exports.updateUserInfo = (req, res, next) => {
       }
     })
     .catch((err) => {
-      // if (err.name === 'CastError' || err.name === 'ValidationError') {
-      //   next(new ValidationError('Переданы некорректные данныее'));
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        next(new ValidationError('Переданы некорректные данные'));
+      }
       // } else {
       //   next(err);
       // }
@@ -113,8 +104,9 @@ module.exports.updateAvatar = (req, res, next) => {
       }
     })
     .catch((err) => {
-      // if (err.name === 'CastError' || err.name === 'ValidationError') {
-      //   next(new ValidationError('Переданы некорректные данныее'));
+      if (err.name === 'ValidationError') {
+        next(new ValidationError('Переданы некорректные данные'));
+      }
       // } else {
       //   next(err);
       // }
@@ -139,8 +131,7 @@ module.exports.login = (req, res, next) => {
         .end();
     })
     .catch((err) => {
-      createError(err.message, UNAUTHORIZED, next);
-      next(err);
+      next(new AuthError(err.message));
     });
 };
 
