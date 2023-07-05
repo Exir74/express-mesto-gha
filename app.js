@@ -4,14 +4,8 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const helmet = require('helmet');
-const userRouter = require('./routes/usersRoutes');
-const cardRouter = require('./routes/cardsRoutes');
-const notFoundErrorHandler = require('./errors/notFoundErrorHandler');
 const errorHandler = require('./errors/errorHandler');
-const { login, createUser } = require('./controllers/userControls');
-const auth = require('./middlewares/auth');
-const { userValidator } = require('./middlewares/userValidator');
-const signout = require('./middlewares/signout');
+const routes = require('./routes/index');
 
 const { PORT = 3000 } = process.env;
 const URL = 'mongodb://localhost:27017/mestodb';
@@ -26,14 +20,7 @@ mongoose.connect(URL)
   .then(() => console.log(`db connected on ${URL}`))
   .catch((err) => console.log(`Ошибка подключения к БД: ${err.name}`));
 
-app.post('/signin', userValidator, login);
-app.post('/signup', userValidator, createUser);
-
-app.use(auth);
-app.use(userRouter);
-app.use(cardRouter);
-app.get('/signout', signout);
-app.use(notFoundErrorHandler);
+app.use(routes);
 
 app.use(errors());
 app.use(errorHandler);
