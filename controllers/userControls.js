@@ -16,11 +16,12 @@ module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные'));
-      } else {
-        next(err);
-      }
+      // if (err.name === 'ValidationError') {
+      //   next(new ValidationError('Переданы некорректные данные'));
+      // } else {
+      //   next(err);
+      // }
+      next(err);
     });
 };
 
@@ -41,7 +42,7 @@ module.exports.getUser = (req, res, next) => {
       }
     });
 };
-// -------CreateUser ПРОВКРЬ
+
 module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
@@ -57,15 +58,20 @@ module.exports.createUser = (req, res, next) => {
           res.send({ data: person });
         })
         .catch((err) => {
-          if (err.name === 'ValidationError' && !err.message) {
-            next(new ValidationError('Переданы некорректные данные'));
-          } else if (err.code === 11000) {
+          // if (err.name === 'ValidationError' && !err.message) {
+          //   next(new ValidationError('Переданы некорректные данные'));
+          // } else if (err.code === 11000) {
+          //   createError('Такой email уже зарегистрирорван', CONFLICT, next);
+          // } else if
+          // (err.message.includes('User validation failed:')) { // Скорее всего нужно будет убрать
+          //   next(new ValidationError(err.message));
+          // } else {
+          //   next(err);
+          // }
+          if (err.code === 11000) {
             createError('Такой email уже зарегистрирорван', CONFLICT, next);
-          } else if (err.message.includes('User validation failed:')) { // Скорее всего нужно будет убрать
-            next(new ValidationError(err.message));
-          } else {
-            next(err);
           }
+          next(err);
         }));
   }
 };
@@ -84,12 +90,12 @@ module.exports.updateUserInfo = (req, res, next) => {
       }
     })
     .catch((err) => {
-      console.log(err.name);
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данныее'));
-      } else {
-        next(err);
-      }
+      // if (err.name === 'CastError' || err.name === 'ValidationError') {
+      //   next(new ValidationError('Переданы некорректные данныее'));
+      // } else {
+      //   next(err);
+      // }
+      next(err);
     });
 };
 
@@ -107,12 +113,12 @@ module.exports.updateAvatar = (req, res, next) => {
       }
     })
     .catch((err) => {
-      console.log(err.name);
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данныее'));
-      } else {
-        next(err);
-      }
+      // if (err.name === 'CastError' || err.name === 'ValidationError') {
+      //   next(new ValidationError('Переданы некорректные данныее'));
+      // } else {
+      //   next(err);
+      // }
+      next(err);
     });
 };
 module.exports.login = (req, res, next) => {
@@ -134,7 +140,6 @@ module.exports.login = (req, res, next) => {
     })
     .catch((err) => {
       createError(err.message, UNAUTHORIZED, next);
-      console.log(err.statusCode);
       next(err);
     });
 };

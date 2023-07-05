@@ -20,11 +20,12 @@ module.exports.createCard = (req, res, next) => {
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные'));
-      } else {
-        next(err);
-      }
+      // if (err.name === 'ValidationError') {
+      //   next(new ValidationError('Переданы некорректные данные'));
+      // } else {
+      //   next(err);
+      // }
+      next(err);
     });
 };
 
@@ -33,7 +34,6 @@ module.exports.deleteCard = (req, res, next) => {
     .then((card) => {
       if (card) {
         const owner = card.owner.toString();
-        console.log(owner === req.user._id);
         if (owner !== req.user._id) {
           const error = new Error('Можно удалять только свою карточку');
           error.statusCode = FORBIDDEN;
@@ -66,11 +66,12 @@ module.exports.likeCard = (req, res, next) => Card.findByIdAndUpdate(
     }
   })
   .catch((err) => {
-    if (err.name === 'CastError') {
-      next(new ValidationError('Переданы некорректные данные'));
-    } else {
-      next(err);
-    }
+    // if (err.name === 'CastError') {
+    //   next(new ValidationError('Переданы некорректные данные'));
+    // } else {
+    //   next(err);
+    // }
+    next(err);
   });
 
 module.exports.dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
@@ -86,9 +87,10 @@ module.exports.dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
     }
   })
   .catch((err) => {
-    if (err.name === 'CastError') {
-      next(new ValidationError('Переданы некорректные данные'));
-    } else {
-      next(err);
-    }
+    // if (err.name === 'CastError') {
+    //   next(new ValidationError('Переданы некорректные данные'));
+    // } else {
+    //   next(err);
+    // }
+    next(err);
   });
