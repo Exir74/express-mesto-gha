@@ -6,9 +6,7 @@ const { errors } = require('celebrate');
 const helmet = require('helmet');
 const errorHandler = require('./errors/errorHandler');
 const routes = require('./routes/index');
-
-const { PORT = 3000 } = process.env;
-const URL = 'mongodb://localhost:27017/mestodb';
+const { URL, PORT } = require('./utils/constants');
 
 const app = express();
 app.use(helmet());
