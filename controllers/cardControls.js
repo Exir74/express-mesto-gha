@@ -2,7 +2,6 @@ const Card = require('../models/Card');
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
-const { FORBIDDEN } = require('../utils/constants');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -17,8 +16,9 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -28,10 +28,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (card) {
         const owner = card.owner.toString();
         if (owner !== req.user._id) {
-          const error = new Error('Можно удалять только свою карточку');
-          error.statusCode = FORBIDDEN;
-          next(error);
-          next(new ForbiddenError());
+          next(new ForbiddenError('Можно удалять только свою карточку'));
         } else {
           return card;
         }

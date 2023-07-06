@@ -10,14 +10,7 @@ const { JWT_SECRET } = require('../utils/constants');
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => {
-      // if (err.name === 'ValidationError') {
-      //   next(new ValidationError('Переданы некорректные данные'));
-      // } else {
-      //   next(err);
-      // }
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports.getUser = (req, res, next) => {
@@ -54,8 +47,9 @@ module.exports.createUser = (req, res, next) => {
           next(new ValidationError('Переданы некорректные данные'));
         } else if (err.code === 11000) {
           next(new ConflictError('Такой email уже зарегистрирорван'));
+        } else {
+          next(err);
         }
-        next(err);
       }));
 };
 
@@ -75,11 +69,9 @@ module.exports.updateUserInfo = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      // } else {
-      //   next(err);
-      // }
-      next(err);
     });
 };
 
@@ -99,11 +91,9 @@ module.exports.updateAvatar = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      // } else {
-      //   next(err);
-      // }
-      next(err);
     });
 };
 module.exports.login = (req, res, next) => {
