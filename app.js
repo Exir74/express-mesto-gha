@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const errorHandler = require('./errors/errorHandler');
 const routes = require('./routes/index');
 const { URL, PORT } = require('./utils/constants');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
 app.use(helmet());
@@ -18,8 +19,10 @@ mongoose.connect(URL)
   .then(() => console.log(`db connected on ${URL}`))
   .catch((err) => console.log(`Ошибка подключения к БД: ${err.name}`));
 
+app.use(requestLogger);
 app.use(routes);
 
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 

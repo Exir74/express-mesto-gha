@@ -5,7 +5,7 @@ const UNAUTHORIZED = 401;
 const FORBIDDEN = 403;
 const CONFLICT = 409;
 const SERVER_ERROR = 500;
-const URL = 'mongodb://localhost:27017/mestodb';
+const URL = 'mongodb://127.0.0.1:27017/mestodb';
 const { PORT = 3000 } = process.env;
 
 module.exports = {
